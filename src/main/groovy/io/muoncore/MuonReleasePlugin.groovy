@@ -8,6 +8,14 @@ class MuonReleasePlugin implements Plugin<Project> {
   void apply(Project project) {
 
     project.subprojects { subproject ->
+
+      def theRepo = "muon"
+
+      if (project.hasProperty("repoKey")) {
+        println "REPO KEY IS ${project.repoKey}"
+        theRepo = project.repoKey
+      }
+//      println "ADDING PROJECT $subproject $project.repoKey"
       if (project.exclude) {
         def excludes = project.exclude.split(",").collect { ":$it"}
         if (subproject.name in excludes) return
@@ -40,6 +48,9 @@ class MuonReleasePlugin implements Plugin<Project> {
 
       subproject.repositories {
         jcenter()
+        maven {
+          url "https://simplicityitself.jfrog.io/simplicityitself/muon"
+        }
       }
 
       subproject.publishing {
@@ -52,10 +63,10 @@ class MuonReleasePlugin implements Plugin<Project> {
 
 // ----------- Deployment --------------
       subproject.artifactory {
-        contextUrl = 'https://simplicityitself.artifactoryonline.com/simplicityitself/'   //The base Artifactory URL if not overridden by the publisher/resolver
+        contextUrl = 'https://simplicityitself.jfrog.io/simplicityitself/'   //The base Artifactory URL if not overridden by the publisher/resolver
         publish {
           repository {
-            repoKey = 'muon'   //The Artifactory repository key to publish to
+            repoKey = theRepo   //The Artifactory repository key to publish to
             username = 'sergio'          //The publisher user name
             password = 'cistechfutures'       //The publisher password
           }
@@ -67,7 +78,7 @@ class MuonReleasePlugin implements Plugin<Project> {
         }
         resolve {
           repository {
-            repoKey = 'muon'  //The Artifactory (preferably virtual) repository key to resolve from
+            repoKey = theRepo  //The Artifactory (preferably virtual) repository key to resolve from
           }
         }
       }
