@@ -51,7 +51,7 @@ class MuonReleasePlugin implements Plugin<Project> {
             subproject.repositories {
                 jcenter()
                 maven {
-                    url "https://simplicityitself.jfrog.io/simplicityitself/muon"
+                    url "https://artifactory.cloud.daviddawson.me/artifactory/muon"
                 }
             }
 
@@ -75,16 +75,18 @@ class MuonReleasePlugin implements Plugin<Project> {
                             links "https://docs.oracle.com/javase/8/docs/api/"
                         }
             }
-
+            def user = project.hasProperty('artifactoryUser') ? artifactoryUser : ''
+            def pass = project.hasProperty('artifactoryPass') ? artifactoryPass : ''
+            println "Using artifactory use ${user}"
 // ----------- Deployment --------------
             subproject.artifactory {
-                contextUrl = 'https://simplicityitself.jfrog.io/simplicityitself/'
+                contextUrl = 'https://artifactory.cloud.daviddawson.me/artifactory'
                 //The base Artifactory URL if not overridden by the publisher/resolver
                 publish {
                     repository {
                         repoKey = theRepo   //The Artifactory repository key to publish to
-                        username = 'sergio'          //The publisher user name
-                        password = 'cistechfutures'       //The publisher password
+                        username = user          //The publisher user name
+                        password = pass
                     }
                     defaults {
                         publications('mavenJava')
@@ -94,10 +96,12 @@ class MuonReleasePlugin implements Plugin<Project> {
                 }
                 resolve {
                     repository {
-                        repoKey = theRepo  //The Artifactory (preferably virtual) repository key to resolve from
+                        repoKey = hasProperty('theRepo') ? theRepo : ''//The Artifactory (preferably virtual) repository key to resolve from
                     }
                 }
             }
+
+
 
             subproject.install {
                 repositories.mavenInstaller {
