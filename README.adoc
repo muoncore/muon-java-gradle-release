@@ -1,0 +1,5 @@
+# Muon Java Release Plugin
+
+This is a gradle plugin that is used to publish java based projects, both snapshot and releases.
+
+These go via an artifactory, and then are promoted via jcenter to maven central. 
